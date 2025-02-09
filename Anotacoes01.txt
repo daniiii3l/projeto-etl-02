@@ -1,0 +1,121 @@
+INFORMAÇÕES BASE
+-----------------------
+
+# 1.0) Algumas informações relevantes:
+--------------------------------------
+
+Banco de Dados (DBeaver):
+--------------------------
+-> Ele é um Client do banco PostegreSQL;
+-> Todo servidor é acessado por um Client;
+-> O Client por sua vez é qualquer aplicação que consome esses dados do servidor;
+-> Sendo assim podemos ter mais de um Client acessando o servidor;
+
+Pontos importantes
+---------------------
+-> Sempre atentar-se a versão python que será utilizada para o projeto;
+-> Com o ambiente virtual temos essa facilidade, pois podemos escolher a versão utilizada;
+
+
+# 2.0) Resumo do projeto:
+--------------------------
+-> Extract: Serão obtidos do Google Drive os arquivos do tipo CSV, JSON e Parquet;
+-> Transform: A transformação irá ocorrer utilizando DuckDB;
+-> Load: A carga será realizada para um banco de dados PostegreSQL utilizando o Client Dbeaver;
+
+
+# SETUP PROJETO:
+--------------------------------
+-> 1) Git: Versionamento do código;
+-> 2) Pyenv: Versão do Python;
+-> 3) Poetry: Ambientação virtual;
+
+
+
+# 3.0) Etapas do projeto:
+-------------------------
+
+ETAPA 1: GitHub + Pyenv
+--------------------------
+
+-> Realizar download do GitHub, pois iremos utilizar o Git Bash;
+-> Criaremos um novo repósitório dentro do GitHub;
+   (GitHub) > "New Repository" > "projeto-etl-02"
+-> (Git Bash) > cd Documents/Projects/projeto-etl-02
+-> Após criar um novo repositório no GitHub, chamado "projeto-etl-2", iremos pegar os códigos gerados pelo GitHub,
+para poder criar o arquivo ".git" na pasta do nosso projeto no diretório "Documents/Projects/projeto-etl-02" (Obs: ele ficará oculto)
+	> echo "# projeto-etl-02" >> README.md
+          git init
+	  git add README.md
+	  git commit -m "first commit"
+	  git branch -M main
+	  git remote add origin https://github.com/daniiii3l/projeto-etl-02.git
+	  git push -u origin main
+
+-> Podemos abrir o VScode no local em que estamos navegando pelo Git Bush (Documents/Projects/projeto-etl-02)
+-> (Git Bash) > "code ."
+-> (terminal code) > "pyenv local 3.13.2"
+
+ETAPA 2: Poetry
+----------------
+-> O Poetry é responsavel por criar/isolar o ambiente virtual de cada projeto separadamente;
+-> Poetry x Pyenv, pois o pyenv trata-se da versão do Python que iremos utilizar equanto o poetry trata-se do ambiente em si,
+como por exemplo as libs que serão utilizadas individualmente para cada projeto;
+
+-> Precisamos instalar o poetry;
+	-> (Git Bash) > "curl -sSL https://install.python-poetry.org | python3 -"	
+-> Criar um novo projeto:
+	-> (Git Bash) > "poetry new nome-do-projeto"
+-> Gerenciar o ambiente virtual:
+	-> (Git Bash) > "poetry shell"
+-> Para executar o script que está sendo gerenciado pelo poetry:
+	-> (Git Bash) > "poetry run python nome-do-script.py"
+------------------------------------------------------------------------------------------
+
+[ INCIAIANDO ]
+
+-> (terminal code) > "poetry init"
+-> (terminal code) > "poetry shell"
+-> (terminal code) > (enter) > (enter)....
+-> (terminal code) > "poetry env use 3.13.2"
+
+
+-> Adicionar bibliotecas utilizadas no projeto. (*** OBS: vamos instalar utilizando o poetry ao invés do pip install ****)
+	
+	-> (terminal code): "poetry add gdown"
+	-> (terminal code): "poetry add duckdb"
+	-> (terminal code): "poetry add streamlit"
+	-> (terminal code): "poetry add psycopg2-binary"
+	-> (terminal code): "poetry add psycopg2"
+	-> (terminal code): "poetry add python-dotenv"
+	-> (terminal code): "poetry add sqlalchemy"
+
+
+# biblioteca "gdown": 
+	-> Para baixar/utilizar o google drive
+	-> Quando precisarmos utilizar algo em produção, devemos utilizar a propria biblioteca do google (google api python)
+# biblioteca "psycopg2-binary": 
+	-> Para trabalhar com banco de dados postegreSQL
+# biblioteca "psycopg2": 
+# biblioteca "streamlit":
+	-> Para criação do nosso front-end
+# biblioteca "duckdb":
+	-> Para tratamento dos dados
+# biblioteca "python-dotenv":
+	-> Para ambientes virtuais
+# biblioteca "sqlalchemy":
+	-> Para parte dos tratamentos SQL;
+
+-> Caso queiramos gerar o arquivo de requirements.txtcom as bibliotecas instaladas:
+(terminal bash) > "pip freeze >> requirements.txt
+
+
+# ETAPA 3: Testar primeiro commit no github
+-------------------------------------------
+-> (terminal code): "git add ."
+-> (terminal code): "git commit -m "build: adicionar libs"
+-> (terminal code): "git push"
+
+
+
+ 
