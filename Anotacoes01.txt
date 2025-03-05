@@ -102,9 +102,9 @@ como por exemplo as libs que serão utilizadas individualmente para cada projeto
 # biblioteca "duckdb":
 	-> Para tratamento dos dados
 # biblioteca "python-dotenv":
-	-> Para ambientes virtuais
+	-> Para conseguir vizualizar minhas variáveis
 # biblioteca "sqlalchemy":
-	-> Para parte dos tratamentos SQL;
+	-> Para salvar os resultados no PostegresSQL;
 
 -> Caso queiramos gerar o arquivo de requirements.txtcom as bibliotecas instaladas:
 (terminal bash) > "pip freeze >> requirements.txt
@@ -115,6 +115,112 @@ como por exemplo as libs que serão utilizadas individualmente para cada projeto
 -> (terminal code): "git add ."
 -> (terminal code): "git commit -m "build: adicionar libs"
 -> (terminal code): "git push"
+
+
+
+# ETAPA 4: Iniciando o projeto
+----------------------------------
+Link pasta "Financeiro" (live): https://drive.google.com/drive/folders/19flL9P8UV9aSu4iQtM6Ymv-77VtFcECP
+Link pasta "Financeiro" (minha): 'https://drive.google.com/drive/folders/1Inda8n1yz05fnVzcRBtNOWGMxABQR5Wh?'
+
+
+# 1. EXTRAÇÃO
+------------
+-> Scrit para baixar os arquivos do Google Drive;
+	- Para baixar os arquivos, devemos criar uma pasta dentro do Drive;
+	- Tornar a pasta Pública;
+	- Obter o link de compartilhamento para fornecer no script (Obs: Retirar a parte final do link - pós interrogação)
+
+
+---------------------------------------------------------//---------------------------------------------------------------------------------
+
+# EXTRA (MEIO DO CAMINHO) - Criação de banco PostegreSQL 
+--------------------------------------------------------------
+
+-> Criaremos um banco em PostegreSQL em um Servidor Free (Semelhante a AWS);
+-> Utilizaremos para isso o "Render"
+-> (Render) > "+New" > "Postegre"
+	-> Informações para o banco que criamos;
+		-> Name: workshop-ao-vivo
+		-> Database: dbname;
+		-> User: dbuser
+		-> (versão Free)
+-> Iremos acessar o banco criado com Dbeaver (Client);
+-> Criaremos em nova conexão ("+") -> (Nova Conexão) > (PostegreSQL)
+-> Agora iremos copiar as informaçõs do nosso banco gerada pela Render:
+	- Host: dpg-cupri93tq21c739vsf90-a.oregon-postgres.render.com (*** OBS ***: copiar link do host gerado na render: (tudo que vier após o "@" até render.com))
+	- Banco de dados: (copiar nome do banco gerado pela Render)
+	- User: (copiar nome do user gerado pela Render)
+	- Password: (copiar nome do password gerado pela Render)
+-> (Testar Conexão)
+
+-> Criando as tabelas no Dbeaver:
+-> (Selecionar banco após conexão) > (Esquemas) > (public) > (Gerar novo SQL) > (Novo Script)
+
+---------------------------------------- // ----------------------------------
+CREATE TABLE vendas (
+venda_id SERIAL PRIMARY KEY,
+data_venda DATE NOT NULL,
+valor DECIMAL (10, 2) NOT NULL,
+quantidade INT NOT NULL,
+cliente_id INT NOT NULL,
+categoria VARCHAR(255) NOT NULL
+);
+
+
+
+CREATE TABLE vendas_calculado (
+venda_id SERIAL PRIMARY KEY,
+data_venda DATE NOT NULL,
+valor DECIMAL (10, 2) NOT NULL,
+quantidade INT NOT NULL,
+cliente_id INT NOT NULL,
+categoria VARCHAR(255) NOT NULL,
+total_vendas DECIMAL(10, 2) NOT NULL
+);
+
+
+insert into vendas (data_venda, valor, quantidade, cliente_id, categoria) values
+('2024-01-01', 66.1, 10, 1, 'Alimentos'),
+('2024-01-01', 50.33, 5, 2, 'Brinquedos'),
+('2024-01-01', 40.2, 14, 1, 'Alimentos'),
+('2024-01-02', 70.22, 10, 2, 'Brinquedos'),
+('2024-01-02', 105.0, 6, 3, 'Eletronicos'),
+('2024-01-02', 243.22, 7, 3, 'Eletronicos'),
+('2024-01-03', 60.1, 10, 1, 'Alimentos'),
+('2024-01-03', 500.54, 10, 1, 'Alimentos'),
+('2024-01-03', 33.0, 20, 2, 'Brinquedos'),
+('2024-01-03', 25.0, 4, 1, 'Alimentos'),
+('2024-01-03', 33.1, 10, 3, 'Eletronicos'),
+('2024-01-03', 54.1, 10, 2, 'Brinquedos'),
+('2024-01-04', 78.2, 10, 1, 'Alimentos'),
+('2024-01-04', 77.1, 14, 2, 'Brinquedos'),
+('2024-01-04', 80.15, 3, 1, 'Eletronicos'),
+('2024-01-04', 66.1, 10, 2, 'Brinquedos'),
+('2024-01-05', 677.1, 1, 3, 'Eletronicos'),
+('2024-01-05', 42.1, 22, 1, 'Alimentos'),
+('2024-01-05', 330.1, 2, 1, 'Alimentos');
+
+
+
+insert into vendas_calculado (data_venda, valor, quantidade, cliente_id, categoria, total_vendas)
+select data_venda, valor, quantidade, cliente_id, categoria, (valor * quantidade) as total_vendas
+from vendas;
+
+
+---------------------------------------- // ----------------------------------------------------------------------------
+
+# ETAPA 5: Salvar bases baixadas do Drive em uma tabela PostegreSQL
+-------------------------------------------------------------------------
+
+-> Apos criadas as tabelas no Dbeaver no qual iremos inserir os dados;
+-> Iremos criar uma função python que recebe o DataFrame que será salvo e o nome da tabela que irá salvar os dados;
+-> Pontos importantes:
+	-> Fornecer a URL externa do nosso DATABASE criado no Render;
+	-> Copiar o link fornecido pelo site do Render (Lembrar de colocar o número da porta pós o ".com")
+	-> Criaremos um arquivo python do tipo ".env" para receber a variavel com a URL da nossa DATABASE;
+	-> (VSCode) > "new_file" > ".env" > DATABASE_URL = postgresql://dbuser:pUGvR5s52BQbCjHy8Al615xpN3TBPwDj@dpg-cupri93tq21c739vsf90-a.oregon-postgres.render.com:5432/dbname_erfc
+	-> *** OBS ***: Precisamos carregar as variáveis de ambiente do ".env" (Inserir o "load_dotenv()" no script python após as importações)
 
 
 
