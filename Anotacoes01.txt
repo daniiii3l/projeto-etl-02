@@ -218,10 +218,21 @@ from vendas;
 -> Pontos importantes:
 	-> Fornecer a URL externa do nosso DATABASE criado no Render;
 	-> Copiar o link fornecido pelo site do Render (Lembrar de colocar o número da porta pós o ".com")
-	-> Criaremos um arquivo python do tipo ".env" para receber a variavel com a URL da nossa DATABASE;
+	-> Criaremos um arquivo no vscode do tipo ".env" para receber a variavel com a URL da nossa DATABASE;
 	-> (VSCode) > "new_file" > ".env" > DATABASE_URL = postgresql://dbuser:pUGvR5s52BQbCjHy8Al615xpN3TBPwDj@dpg-cupri93tq21c739vsf90-a.oregon-postgres.render.com:5432/dbname_erfc
 	-> *** OBS ***: Precisamos carregar as variáveis de ambiente do ".env" (Inserir o "load_dotenv()" no script python após as importações)
 
 
+---------------------------------------- // ----------------------------------------------------------------------------
 
- 
+# ETAPA 6: Refinando o processo
+---------------------------------
+
+-> Nessa etapa podemos utilizar a propria biblioteca "duckdb" para garantir que os dados os arquivos que serão baixados e inseridos no banco
+não sejam sempre os mesmos;
+-> A partir da biblioteca "duckdb" iremos criar um arquivo de banco de dados com o nome "duckdb.db";
+-> Após criar um arquivo de banco de dados, iremos realizar a criação de uma tabela dentro desse arquivo de banco;
+-> Após a criação da tabela iremos realizar o insert com o nome do arquivo e a data do arquivo processado;
+-> A cada etapa em que o arquivo lido ele irá realizar o registro do arquivo nessa tabela;
+-> Por fim temos uma função que irá retornar um select na tabela duckdb com os arquivos em um formato de set de dados;
+-> Iremos realizar um check para identificar se o arquivo baixado já foi registrado na tabela duckdb antes de realizar a carga para a tabela de vendas do banco PostegreSQL;

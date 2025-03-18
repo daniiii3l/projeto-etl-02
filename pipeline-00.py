@@ -3,12 +3,41 @@ import gdown
 import duckdb
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Obs: importação NÃO necessária, a tipagem será utilizada apenas para 1 exemplo
 from duckdb import DuckDBPyRelation
 from pandas import DataFrame
 
 load_dotenv()
+
+# Conecta com o banco "duck.db" / cria um banco caso não exista.
+def conectar_banco():
+    return duckdb.connect(database="duckdb.db", read_only=False)
+
+# Cria uma tabela no banco "duckdb.db" caso ela não exista
+def inicializar_tabela(con):
+    con.execute(
+        """
+        CREATE TABLE IF NOT EXISTS historico_arquivos(
+            nome_arquivo VARCHAR,
+            horario_processamento TIMESTAMP
+        )
+        """
+    )
+
+# Registra um novo arquivo no banco com horário atual
+def registrar_arquivo(con, nome_arquivo):
+    con.execute(
+        """
+        INSERT INTO historico_arquivos (nome_arquivo, horario_processamento) VALUES (?, ?)
+        """, (nome_arquivo, datetime.now())
+    )
+
+# Retorna um set com o nome dos arquivos já processados
+def arquivos_processados(con):
+    return set(row[0] for row in con.execute("SELECT nome_arquivo FROM historico_arquivos").fetchall())
+
 
 # Função para baixar arquivos do Drive
 def baixar_arquivos_google_drive(url_pasta, dir_local):
@@ -48,8 +77,18 @@ if __name__ == '__main__':
     dir_local = r'./pasta_gdown'
     # baixar_arquivos_google_drive(url_pasta, dir_local)
     lista_de_arquivos = listar_arquivos_csv(dir_local)
+    con = conectar_banco()
+    inicializar_tabela(con)
+    processados = arquivos_processados(con)
+
     
     for caminho_arquivo in lista_de_arquivos:
-        df_duck = ler_csv(caminho_arquivo)
-        df_duck_transformado = transformar(df_duck)
-        salvar_postegres(df_duck_transformado, "vendas_calculado")
+        nome_arquivo = os.path.basename(caminho_arquivo)
+        if nome_arquivo not in processados:
+            df_duck = ler_csv(caminho_arquivo)
+            df_duck_transformado = transformar(df_duck)
+            salvar_postegres(df_duck_transformado, "vendas_calculado")
+            registrar_arquivo(con, nome_arquivo)
+            print(f"Arquivo {nome_arquivo} processado e salvo.")
+        else:
+            print(f"Arquivo {nome_arquivo} já foi processado anteriormente.")

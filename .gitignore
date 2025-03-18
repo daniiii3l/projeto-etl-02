@@ -2,3 +2,4 @@
 .venv
 pasta_gdown
 Anotacoes01.txt
+teste_transf_csv_em_parquet.py
